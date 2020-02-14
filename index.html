@@ -17,6 +17,7 @@
 
         <section class="score-panel">
         	<ul class="stars">
+                <!-- stars are dynamically created and displayed here -->
         	</ul>
 
         	<span class="moves">3</span> Moves
@@ -26,8 +27,17 @@
         	</div>
         </section>
 
-        <ul class="deck">
-        </ul>
+        <section class="deck-panel">
+            <ul class="deck">
+                <!-- cards are dynamically created and displayed here -->
+            </ul>
+            <section class="congrats-panel">
+                <h2>Congratulations!</h2>
+                <p>You beat the game in <span class="moves">3</span> moves in a time of <span class="time">0</span> seconds!</p>
+                <div class="restart">Restart</div>
+            </section>
+        </section>
+
     </div>
 
     <script src="js/app.js"></script>

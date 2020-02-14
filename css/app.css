@@ -14,6 +14,9 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 body {
@@ -26,6 +29,8 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    position: relative;
+    max-width: 700px;
 }
 
 h1 {
@@ -36,6 +41,12 @@ h1 {
 /*
  * Styles for the deck of cards
  */
+
+.deck-panel {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
 
 .deck {
     width: 660px;
@@ -109,5 +120,47 @@ h1 {
 
 .score-panel .restart {
     float: right;
+    cursor: pointer;
+}
+
+/*
+ * Styles for the congratulations panel
+ */
+ 
+.congrats-panel {
+    background: linear-gradient(160deg, #cc7a6c 0%, #917e4a 100%);
+    padding: 32px;
+    border-radius: 10px;
+    box-shadow: 12px 15px 20px 0 rgba(46, 61, 73, 0.5);
+    margin: 0 0 3em;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    height: auto;
+    margin: 0 auto;
+    padding: 10px;
+    position: absolute;
+    top: 80px;
+    left: 5%;
+}
+
+.congrats-panel h2 {
+    text-align: center;
+}
+
+.congrats-panel p {
+    text-align: center;
+}
+
+.congrats-panel.enabled {
+    display: flex;
+    flex-direction: column;
+}
+
+.congrats-panel .restart {
+    border-radius: 10px;
+    background: linear-gradient(160deg, #79ee36 0%, #50914a 100%);
+    padding: 10px;
     cursor: pointer;
 }

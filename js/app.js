@@ -32,9 +32,14 @@ class GameState {
     constructor() {
         this.currentSymbolOrder = defaultSymbolOrder;
         this.moveCount = 0;
+        this.matchCount = 0;
         this.openedCards = [];
         this.cardsEnabled = true; // clicking on cards is disabled while an animation is playing
         shuffle(this.currentSymbolOrder);
+    }
+
+    isWon() {
+        return this.matchCount >= this.currentSymbolOrder.length / 2;
     }
 }
 
@@ -51,6 +56,14 @@ function hideOpenedCards() {
     game.cardsEnabled = true;
 }
 
+function showCongratsPanel() {
+    document.querySelector('.congrats-panel').classList.add('enabled');
+}
+
+function hideCongratsPanel() {
+    document.querySelector('.congrats-panel').classList.remove('enabled');
+}
+
 function checkForMatch() {
     if (game.openedCards.length == 2) {
         game.moveCount++;
@@ -60,7 +73,11 @@ function checkForMatch() {
                 openCard.classList.add('match');
             }
             game.openedCards = [];
+            game.matchCount++;
             refreshScorePanel();
+            if (game.isWon()) {
+                showCongratsPanel();
+            }
         }
         else {
             game.cardsEnabled = false;
@@ -69,9 +86,11 @@ function checkForMatch() {
     }
 }
 
-function refreshMoveCounter() {
-    const moveCounter = document.querySelector('.moves');
-    moveCounter.textContent = game.moveCount;
+function refreshMoveCounters() {
+    const moveCounters = document.querySelectorAll('.moves');
+    for (const moveCounter of moveCounters) {
+        moveCounter.textContent = game.moveCount;
+    }
 }
 
 function refreshStars() {
@@ -93,7 +112,7 @@ function refreshStars() {
 }
 
 function refreshScorePanel() {
-    refreshMoveCounter();
+    refreshMoveCounters();
     refreshStars();
 }
 
@@ -131,14 +150,19 @@ function restartGame() {
         card.appendChild(symbol);
         deck.appendChild(card);
     }
+    hideCongratsPanel();
     refreshScorePanel();
     resetCardListeners();
 }
 
 restartGame();
 
-const restartButton = document.querySelector('.restart');
-restartButton.addEventListener('click', restartGame);
+const restartButtons = document.querySelectorAll('.restart');
+for(const restartButton of restartButtons) {
+    restartButton.addEventListener('click', restartGame);
+}
+
+// showCongratsPanel();
 
 /*
  * set up the event listener for a card. If a card is clicked:
