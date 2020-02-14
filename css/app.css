@@ -81,6 +81,10 @@ h1 {
     font-size: 33px;
 }
 
+.deck .card.hidden {
+    display: none;
+}
+
 /*
  * Styles for the Score Panel
  */

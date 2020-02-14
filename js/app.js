@@ -25,6 +25,36 @@ function shuffle(array) {
     return array;
 }
 
+const symbolClasses = ['diamond','paper-plane-o','anchor','bolt','cube','leaf','bicycle','bomb'];
+const defaultSymbolOrder = [0,1,2,3,4,2,5,6,0,7,5,7,3,6,1,4];
+const currentSymbolOrder = defaultSymbolOrder;
+
+const deck = document.querySelector(".deck");
+for (let i=0; i<16; ++i) {
+    const element = document.createElement('li');
+    element.classList.add('card');
+    if (i == 2 || i == 5) {
+        element.classList.add('open');
+        element.classList.add('show');
+        element.classList.add('match');
+    }
+    if (i == 12) {
+        element.classList.add('open');
+        element.classList.add('show');
+    }
+    const symbol = document.createElement('i');
+    symbol.classList.add('fa');
+    symbol.classList.add('fa-' + symbolClasses[currentSymbolOrder[i]]);
+    element.appendChild(symbol);
+    deck.appendChild(element);
+}
+
+const cards = document.querySelectorAll(".card");
+for(const card of cards) {
+    card.addEventListener('click', function() {
+        window.alert('a card was clicked!');
+    });
+}
 
 /*
  * set up the event listener for a card. If a card is clicked:
