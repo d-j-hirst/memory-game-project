@@ -29,7 +29,20 @@ const symbolClasses = ['diamond','paper-plane-o','anchor','bolt','cube','leaf','
 const defaultSymbolOrder = [0,1,2,3,4,2,5,6,0,7,5,7,3,6,1,4];
 const currentSymbolOrder = defaultSymbolOrder;
 
+function cardListener(evt) {
+    evt.srcElement.classList.add('show');
+    evt.srcElement.classList.add('open');
+}
+
+function resetCardListeners() {
+    const cards = document.querySelectorAll(".card");
+    for(const card of cards) {
+        card.addEventListener('click', cardListener);
+    }
+}
+
 function restartGame() {
+    shuffle(currentSymbolOrder);
     const deck = document.querySelector(".deck");
     while (deck.firstChild) {
         deck.firstChild.remove();
@@ -43,17 +56,13 @@ function restartGame() {
         element.appendChild(symbol);
         deck.appendChild(element);
     }
+    resetCardListeners();
 }
 
 restartGame();
 
-const cards = document.querySelectorAll(".card");
-for(const card of cards) {
-    card.addEventListener('click', function(evt) {
-        evt.srcElement.classList.add('show');
-        evt.srcElement.classList.add('open');
-    });
-}
+const restartButton = document.querySelector(".restart");
+restartButton.addEventListener('click', restartGame);
 
 /*
  * set up the event listener for a card. If a card is clicked:
