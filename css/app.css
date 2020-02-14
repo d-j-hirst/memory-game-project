@@ -101,9 +101,11 @@ h1 {
 
 .score-panel {
     text-align: left;
-    width: 480px;
+    width: 500px;
     margin-bottom: 10px;
-    font-size: 2.0em;
+    font-size: 1.7em;
+    display: flex;
+    flex-direction: row;
 }
 
 .score-panel .stars {
@@ -118,7 +120,16 @@ h1 {
     display: inline-block;
 }
 
+.score-panel .moves-text {
+    margin: 0 0px 0 40px;
+}
+
+.score-panel .time-text {
+    margin: 0 0px 0 40px;
+}
+
 .score-panel .restart {
+    margin: 0 0px 0 40px;
     float: right;
     cursor: pointer;
 }

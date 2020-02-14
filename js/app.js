@@ -29,10 +29,13 @@ const symbolClasses = ['diamond','paper-plane-o','anchor','bolt','cube','leaf','
 const defaultSymbolOrder = [0,1,2,3,4,2,5,6,0,7,5,7,3,6,1,4];
 
 class GameState {
-    constructor() {
+    constructor(previousSession) {
         this.currentSymbolOrder = defaultSymbolOrder;
         this.moveCount = 0;
         this.matchCount = 0;
+        this.session = previousSession + 1; // checking session number ensures that timer events from one session so
+                                            // not bleed into the next one
+        this.timePassed = 0;
         this.openedCards = [];
         this.cardsEnabled = true; // clicking on cards is disabled while an animation is playing
         shuffle(this.currentSymbolOrder);
@@ -43,7 +46,7 @@ class GameState {
     }
 }
 
-let game = new GameState;
+let game = new GameState(0);
 
 function hideOpenedCards() {
     for (const cardIndex of game.openedCards) {
@@ -86,6 +89,13 @@ function checkForMatch() {
     }
 }
 
+function refreshTimeCounters() {
+    const timeCounters = document.querySelectorAll('.time');
+    for (const timeCounter of timeCounters) {
+        timeCounter.textContent = game.timePassed;
+    }
+}
+
 function refreshMoveCounters() {
     const moveCounters = document.querySelectorAll('.moves');
     for (const moveCounter of moveCounters) {
@@ -113,6 +123,7 @@ function refreshStars() {
 
 function refreshScorePanel() {
     refreshMoveCounters();
+    refreshTimeCounters();
     refreshStars();
 }
 
@@ -134,8 +145,17 @@ function resetCardListeners() {
     }
 }
 
+function incrementTimer(session) {
+    if (session == game.session && !game.isWon()) {
+        game.timePassed++;
+        refreshTimeCounters();
+        // the extra function syntax is required otherwise this calls immediately causing a stack overflow
+        setTimeout(function() {incrementTimer(session)}, 1000);
+    }
+}
+
 function restartGame() {
-    game = new GameState;
+    game = new GameState(game.session);
     const deck = document.querySelector('.deck');
     while (deck.firstChild) {
         deck.firstChild.remove();
@@ -151,11 +171,13 @@ function restartGame() {
         deck.appendChild(card);
     }
     hideCongratsPanel();
+    setTimeout(function() {incrementTimer(game.session)}, 1000);
     refreshScorePanel();
     resetCardListeners();
 }
 
 restartGame();
+game.session = 0; // just in case we actually use the number some day
 
 const restartButtons = document.querySelectorAll('.restart');
 for(const restartButton of restartButtons) {
