@@ -11,23 +11,24 @@ html {
 html,
 body {
     height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+    align-content: center;
 }
 
 body {
     background: #ffffff url('../img/geometry2.png'); /* Background pattern from Subtle Patterns */
     font-family: 'Coda', cursive;
+    align-self: center;
 }
 
 .container {
     display: flex;
     justify-content: center;
+    align-self: center;
     align-items: center;
     flex-direction: column;
     position: relative;
-    margin: 0 auto;
+    margin: auto;
+    width: 700px;
 }
 
 h1 {
