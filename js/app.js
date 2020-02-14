@@ -27,41 +27,85 @@ function shuffle(array) {
 
 const symbolClasses = ['diamond','paper-plane-o','anchor','bolt','cube','leaf','bicycle','bomb'];
 const defaultSymbolOrder = [0,1,2,3,4,2,5,6,0,7,5,7,3,6,1,4];
-const currentSymbolOrder = defaultSymbolOrder;
-let openedCards = [];
-let cardsEnabled = true; // clicking on cards is disabled while an animation is playing
+
+class GameState {
+    constructor() {
+        this.currentSymbolOrder = defaultSymbolOrder;
+        this.moveCount = 0;
+        this.openedCards = [];
+        this.cardsEnabled = true; // clicking on cards is disabled while an animation is playing
+        shuffle(this.currentSymbolOrder);
+    }
+}
+
+let game = new GameState;
 
 function hideOpenedCards() {
-    for (i = 0; i < 2; ++i) {
-        const openCard = document.querySelector('#card-' + openedCards[i]);
+    for (const cardIndex of game.openedCards) {
+        const openCard = document.querySelector('#card-' + cardIndex);
         openCard.classList.remove('show');
         openCard.classList.remove('open');
     }
-    while(openedCards.length) openedCards.pop();
-    cardsEnabled = true;
+    game.openedCards = [];
+    refreshScorePanel();
+    game.cardsEnabled = true;
+}
+
+function checkForMatch() {
+    if (game.openedCards.length == 2) {
+        game.moveCount++;
+        if (game.currentSymbolOrder[game.openedCards[0]] == game.currentSymbolOrder[game.openedCards[1]]) {
+            for (const cardIndex of game.openedCards) {
+                const openCard = document.querySelector('#card-' + cardIndex);
+                openCard.classList.add('match');
+            }
+            game.openedCards = [];
+            refreshScorePanel();
+        }
+        else {
+            game.cardsEnabled = false;
+            setTimeout(hideOpenedCards, 1000);
+        }
+    }
+}
+
+function refreshMoveCounter() {
+    const moveCounter = document.querySelector('.moves');
+    moveCounter.textContent = game.moveCount;
+}
+
+function refreshStars() {
+    const starCount = (game.moveCount < 20 ? 3 : (game.moveCount < 30 ? 2 : 1));
+    const stars = document.querySelector('.stars');
+    // if too few stars, add more until we have enough
+    while (stars.children.length < starCount) {
+        const star = document.createElement('li');
+        const starSymbol = document.createElement('i');
+        starSymbol.classList.add('fa');
+        starSymbol.classList.add('fa-star');
+        star.appendChild(starSymbol);
+        stars.appendChild(star);
+    }
+    // if too many stars, remove until we have the right number
+    while (stars.children.length > starCount) {
+        stars.firstChild.remove();
+    }
+}
+
+function refreshScorePanel() {
+    refreshMoveCounter();
+    refreshStars();
 }
 
 function cardListener(evt) {
-    if (!cardsEnabled) return;
+    if (!game.cardsEnabled) return;
     const card = evt.currentTarget;
     if (card.classList.contains('open')) return;
     card.classList.add('show');
     card.classList.add('open');
     const index = card.id.split('-')[1];
-    openedCards.push(index);
-    if (openedCards.length == 2) {
-        if (currentSymbolOrder[openedCards[0]] == currentSymbolOrder[openedCards[1]]) {
-            for (i = 0; i < 2; ++i) {
-                const openCard = document.querySelector('#card-' + openedCards[i]);
-                openCard.classList.add('match');
-            }
-            openedCards = [];
-        }
-        else {
-            cardsEnabled = false;
-            setTimeout(hideOpenedCards, 1000);
-        }
-    }
+    game.openedCards.push(index);
+    checkForMatch();
 }
 
 function resetCardListeners() {
@@ -72,23 +116,22 @@ function resetCardListeners() {
 }
 
 function restartGame() {
-    shuffle(currentSymbolOrder);
+    game = new GameState;
     const deck = document.querySelector('.deck');
     while (deck.firstChild) {
         deck.firstChild.remove();
     }
     for (let i=0; i<16; ++i) {
-        const element = document.createElement('li');
-        element.classList.add('card');
-        element.id = 'card-' + i;
+        const card = document.createElement('li');
+        card.classList.add('card');
+        card.id = 'card-' + i;
         const symbol = document.createElement('i');
         symbol.classList.add('fa');
-        symbol.classList.add('fa-' + symbolClasses[currentSymbolOrder[i]]);
-        element.appendChild(symbol);
-        deck.appendChild(element);
+        symbol.classList.add('fa-' + symbolClasses[game.currentSymbolOrder[i]]);
+        card.appendChild(symbol);
+        deck.appendChild(card);
     }
-    openedCards = [];
-    cardsEnabled = true;
+    refreshScorePanel();
     resetCardListeners();
 }
 
