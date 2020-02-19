@@ -33,8 +33,8 @@ class GameState {
         this.currentSymbolOrder = defaultSymbolOrder;
         this.moveCount = 0;
         this.matchCount = 0;
-        this.session = previousSession + 1; // checking session number ensures that timer events from one session so
-                                            // not bleed into the next one
+        this.session = previousSession + 1; // checking session number ensures that timer events
+                                            // from one session to avoid bleeding into the next one
         this.timePassed = 0;
         this.openedCards = [];
         this.cardsEnabled = true; // clicking on cards is disabled while an animation is playing
@@ -67,24 +67,32 @@ function hideCongratsPanel() {
     document.querySelector('.congrats-panel').classList.remove('enabled');
 }
 
+function handleMatch() {
+    for (const cardIndex of game.openedCards) {
+        const openCard = document.querySelector('#card-' + cardIndex);
+        openCard.classList.add('match');
+    }
+    game.openedCards = [];
+    game.matchCount++;
+    refreshScorePanel();
+    if (game.isWon()) {
+        showCongratsPanel();
+    }
+}
+
+function handleNonMatch() {
+    game.cardsEnabled = false;
+    setTimeout(hideOpenedCards, 1000);
+}
+
 function checkForMatch() {
     if (game.openedCards.length == 2) {
         game.moveCount++;
         if (game.currentSymbolOrder[game.openedCards[0]] == game.currentSymbolOrder[game.openedCards[1]]) {
-            for (const cardIndex of game.openedCards) {
-                const openCard = document.querySelector('#card-' + cardIndex);
-                openCard.classList.add('match');
-            }
-            game.openedCards = [];
-            game.matchCount++;
-            refreshScorePanel();
-            if (game.isWon()) {
-                showCongratsPanel();
-            }
+            handleMatch();
         }
         else {
-            game.cardsEnabled = false;
-            setTimeout(hideOpenedCards, 1000);
+            handleNonMatch();
         }
     }
 }
@@ -105,19 +113,22 @@ function refreshMoveCounters() {
 
 function refreshStars() {
     const starCount = (game.moveCount < 20 ? 3 : (game.moveCount < 30 ? 2 : 1));
-    const stars = document.querySelector('.stars');
-    // if too few stars, add more until we have enough
-    while (stars.children.length < starCount) {
-        const star = document.createElement('li');
-        const starSymbol = document.createElement('i');
-        starSymbol.classList.add('fa');
-        starSymbol.classList.add('fa-star');
-        star.appendChild(starSymbol);
-        stars.appendChild(star);
-    }
-    // if too many stars, remove until we have the right number
-    while (stars.children.length > starCount) {
-        stars.firstChild.remove();
+    const starContainers = document.querySelectorAll('.stars');
+    // Apply the same code to the main game stars and the congrats panel stars
+    for (const stars of starContainers) {
+        // if too few stars, add more until we have enough
+        while (stars.children.length < starCount) {
+            const star = document.createElement('li');
+            const starSymbol = document.createElement('i');
+            starSymbol.classList.add('fa');
+            starSymbol.classList.add('fa-star');
+            star.appendChild(starSymbol);
+            stars.appendChild(star);
+        }
+        // if too many stars, remove until we have the right number
+        while (stars.children.length > starCount) {
+            stars.firstChild.remove();
+        }
     }
 }
 
@@ -177,22 +188,9 @@ function restartGame() {
 }
 
 restartGame();
-game.session = 0; // just in case we actually use the number some day
+game.session = 0; // just in case we actually use the absolute number some day
 
 const restartButtons = document.querySelectorAll('.restart');
 for(const restartButton of restartButtons) {
     restartButton.addEventListener('click', restartGame);
 }
-
-// showCongratsPanel();
-
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */

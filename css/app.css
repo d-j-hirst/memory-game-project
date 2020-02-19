@@ -160,6 +160,19 @@ h1 {
     text-align: center;
 }
 
+.congrats-panel .stars {
+    font-size: 2.5em;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    margin: 0 5px 0 0;
+}
+
+.congrats-panel .stars li {
+    list-style: none;
+    display: inline-block;
+}
+
 .congrats-panel p {
     text-align: center;
 }
