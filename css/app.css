@@ -177,11 +177,8 @@ h1 {
     0% {
         transform: scale(1, 1);
     }
-    50% {
-        transform: scale(1.2, 1.2);
-    }
     100% {
-        transform: scale(1, 1);
+        transform: scale(1.2, 1.2);
     }
 }
 
@@ -189,7 +186,7 @@ h1 {
     cursor: default;
     background: #02ccba;
     font-size: 33px;
-    animation: match-animation 0.4s alternate 0s 1 forwards;
+    animation: match-animation 0.2s alternate 0s 2 forwards;
 }
 
 .deck .card .card-display.hidden {
@@ -239,6 +236,15 @@ h1 {
  * Styles for the congratulations panel
  */
  
+@keyframes congrats-animation {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 .congrats-panel {
     background: linear-gradient(160deg, #cc7a6c 0%, #917e4a 100%);
     padding: 32px;
@@ -255,6 +261,7 @@ h1 {
     position: absolute;
     top: 80px;
     left: 5%;
+    animation: congrats-animation 1s;
 }
 
 .congrats-panel h2 {
