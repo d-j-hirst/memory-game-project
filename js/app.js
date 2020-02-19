@@ -48,15 +48,24 @@ class GameState {
 
 let game = new GameState(0);
 
-function hideOpenedCards() {
+function completeClosedCards() {
     for (const cardIndex of game.openedCards) {
         const openCard = document.querySelector('#card-' + cardIndex);
         openCard.classList.remove('show');
-        openCard.classList.remove('open');
+        openCard.classList.remove('close');
     }
     game.openedCards = [];
     refreshScorePanel();
     game.cardsEnabled = true;
+}
+
+function hideOpenedCards() {
+    for (const cardIndex of game.openedCards) {
+        const openCard = document.querySelector('#card-' + cardIndex);
+        openCard.classList.remove('open');
+        openCard.classList.add('close');
+    }
+    setTimeout(function () {completeClosedCards();}, 200);
 }
 
 function showCongratsPanel() {
@@ -71,6 +80,7 @@ function handleMatch() {
     for (const cardIndex of game.openedCards) {
         const openCard = document.querySelector('#card-' + cardIndex);
         openCard.classList.add('match');
+        openCard.classList.remove('open');
     }
     game.openedCards = [];
     game.matchCount++;
@@ -150,7 +160,7 @@ function cardListener(evt) {
 }
 
 function resetCardListeners() {
-    const cards = document.querySelectorAll('.card');
+    const cards = document.querySelectorAll('.card-display');
     for(const card of cards) {
         card.addEventListener('click', cardListener);
     }
@@ -174,11 +184,14 @@ function restartGame() {
     for (let i=0; i<16; ++i) {
         const card = document.createElement('li');
         card.classList.add('card');
-        card.id = 'card-' + i;
+        const cardDisplay = document.createElement('div');
+        cardDisplay.classList.add('card-display');
+        cardDisplay.id = 'card-' + i;
         const symbol = document.createElement('i');
         symbol.classList.add('fa');
         symbol.classList.add('fa-' + symbolClasses[game.currentSymbolOrder[i]]);
-        card.appendChild(symbol);
+        cardDisplay.appendChild(symbol);
+        card.appendChild(cardDisplay);
         deck.appendChild(card);
     }
     hideCongratsPanel();

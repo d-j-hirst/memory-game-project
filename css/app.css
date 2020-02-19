@@ -59,9 +59,16 @@ h1 {
     justify-content: space-between;
     align-items: center;
     margin: 0 0 3em;
+    list-style: none;
 }
 
 .deck .card {
+    height: 125px;
+    width: 125px;
+    align-items: center;
+}
+
+.deck .card .card-display {
     height: 125px;
     width: 125px;
     background: #2e3d49;
@@ -72,26 +79,107 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-left: auto;
+    margin-right: auto;
     box-shadow: 5px 2px 20px 0 rgba(46, 61, 73, 0.5);
 }
 
-.deck .card.open {
-    transform: rotateY(0);
-    background: #02b3e4;
-    cursor: default;
+@keyframes open-animation {
+    0% {
+        transform: scale(1, 1);
+        background: #2e3d49;
+    }
+    50% {
+        transform: scale(0, 1);
+        background: #2e3d49;
+    }
+    50.1% {
+        transform: scale(0, 1);
+        background: #02b3e4;
+    }
+    100% {
+        transform: scale(1, 1);
+        background: #02b3e4;
+    }
 }
 
-.deck .card.show {
+@keyframes open-symbol-animation {
+    0% {
+        font-size: 0px;
+    }
+    50% {
+        font-size: 0px;
+    }
+    50.1% {
+        font-size: 33px;
+    }
+}
+
+.deck .card .card-display.open {
+    background: #02b3e4;
+    cursor: default;
+    animation: open-animation 0.2s linear 0s 1 normal forwards;
+}
+
+.deck .card .card-display.open i {
+    animation: open-symbol-animation 0.2s linear 0s 1 normal forwards;
+}
+
+.deck .card .card-display.show {
     font-size: 33px;
 }
 
-.deck .card.match {
+@keyframes close-animation {
+    0% {
+        transform: scale(1, 1);
+        background: #02b3e4;
+    }
+    50% {
+        transform: scale(0, 1);
+        background: #02b3e4;
+    }
+    50.1% {
+        transform: scale(0, 1);
+        background: #2e3d49;
+    }
+    100% {
+        transform: scale(1, 1);
+        background: #2e3d49;
+    }
+}
+
+@keyframes close-symbol-animation {
+    0% {
+        font-size: 33px;
+    }
+    50% {
+        font-size: 33px;
+    }
+    50.1% {
+        font-size: 0px;
+    }
+    100% {
+        font-size: 0px;
+    }
+}
+
+.deck .card .card-display.close {
+    background: #02b3e4;
+    cursor: default;
+    animation: close-animation 0.2s linear 0s 1 normal forwards;
+}
+
+.deck .card .card-display.close i {
+    animation: close-symbol-animation 0.2s linear 0s 1 normal forwards;
+}
+
+.deck .card .card-display.match {
     cursor: default;
     background: #02ccba;
     font-size: 33px;
 }
 
-.deck .card.hidden {
+.deck .card .card-display.hidden {
     display: none;
 }
 
