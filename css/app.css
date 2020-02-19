@@ -173,10 +173,23 @@ h1 {
     animation: close-symbol-animation 0.2s linear 0s 1 normal forwards;
 }
 
+@keyframes match-animation {
+    0% {
+        transform: scale(1, 1);
+    }
+    50% {
+        transform: scale(1.2, 1.2);
+    }
+    100% {
+        transform: scale(1, 1);
+    }
+}
+
 .deck .card .card-display.match {
     cursor: default;
     background: #02ccba;
     font-size: 33px;
+    animation: match-animation 0.4s alternate 0s 1 forwards;
 }
 
 .deck .card .card-display.hidden {

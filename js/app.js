@@ -149,14 +149,15 @@ function refreshScorePanel() {
 }
 
 function cardListener(evt) {
-    if (!game.cardsEnabled) return;
+    if (!game.cardsEnabled || game.isWon()) return;
     const card = evt.currentTarget;
-    if (card.classList.contains('open')) return;
+    if (card.classList.contains('show')) return;
     card.classList.add('show');
     card.classList.add('open');
     const index = card.id.split('-')[1];
     game.openedCards.push(index);
-    checkForMatch();
+    setTimeout(function() {checkForMatch();}, 200);
+    ;
 }
 
 function resetCardListeners() {
