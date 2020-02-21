@@ -68,6 +68,14 @@ function hideOpenedCards() {
     setTimeout(function () {completeClosedCards();}, 200);
 }
 
+function recordBestScore() {
+    const previousLeastMoves = window.localStorage.getItem('LeastMoves');
+    if (previousLeastMoves == null || previousLeastMoves > game.moveCount) {
+        window.alert('New best score for: least moves (' + game.moveCount + ')');
+        window.localStorage.setItem('LeastMoves', game.moveCount);
+    }
+}
+
 function showCongratsPanel() {
     document.querySelector('.congrats-panel').classList.add('enabled');
 }
@@ -86,6 +94,7 @@ function handleMatch() {
     game.matchCount++;
     refreshScorePanel();
     if (game.isWon()) {
+        recordBestScore();
         showCongratsPanel();
     }
 }
