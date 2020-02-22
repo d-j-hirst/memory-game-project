@@ -296,3 +296,7 @@ h1 {
     padding: 10px;
     cursor: pointer;
 }
+
+.congrats-panel p .disabled {
+    display: none;
+}

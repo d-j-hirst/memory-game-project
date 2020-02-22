@@ -68,12 +68,50 @@ function hideOpenedCards() {
     setTimeout(function () {completeClosedCards();}, 200);
 }
 
-function recordBestScore() {
-    const previousLeastMoves = window.localStorage.getItem('LeastMoves');
-    if (previousLeastMoves == null || previousLeastMoves > game.moveCount) {
-        window.alert('New best score for: least moves (' + game.moveCount + ')');
-        window.localStorage.setItem('LeastMoves', game.moveCount);
+function recordFewestMoves() {
+    const previousFewestMoves = window.localStorage.getItem('FewestMoves');
+    
+    if (previousFewestMoves != null) {
+        document.querySelector('.fewest-moves-previous-message').classList.remove('disabled');
+        document.querySelector('.previous-fewest-moves').textContent = previousFewestMoves;
     }
+    else {
+        document.querySelector('.fewest-moves-previous-message').classList.add('disabled');
+    }
+
+
+    if (previousFewestMoves == null || previousFewestMoves > game.moveCount) {
+        document.querySelector('.fewest-moves-new-message').classList.remove('disabled');
+        window.localStorage.setItem('FewestMoves', game.moveCount);
+    }
+    else {
+        document.querySelector('.fewest-moves-new-message').classList.add('disabled');
+    }
+}
+
+function recordFastestTime() {
+    const previousFastestTime = window.localStorage.getItem('FastestTime');
+    
+    if (previousFastestTime != null) {
+        document.querySelector('.fastest-time-previous-message').classList.remove('disabled');
+        document.querySelector('.previous-fastest-time').textContent = previousFastestTime;
+    }
+    else {
+        document.querySelector('.fastest-time-previous-message').classList.add('disabled');
+    }
+
+    if (previousFastestTime == null || previousFastestTime > game.timePassed) {
+        document.querySelector('.fastest-time-new-message').classList.remove('disabled');
+        window.localStorage.setItem('FastestTime', game.timePassed);
+    }
+    else {
+        document.querySelector('.fastest-time-new-message').classList.add('disabled');
+    }
+}
+
+function recordBestScore() {
+    recordFewestMoves();
+    recordFastestTime();
 }
 
 function showCongratsPanel() {
