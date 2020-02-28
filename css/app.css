@@ -1,3 +1,7 @@
+/*
+ * General page styles
+ */
+
 html {
     box-sizing: border-box;
 }
@@ -15,7 +19,7 @@ body {
 }
 
 body {
-    background: #ffffff url('../img/geometry2.png'); /* Background pattern from Subtle Patterns */
+    background: #fff url('../img/geometry2.png'); /* Background pattern from Subtle Patterns */
     font-family: 'Coda', cursive;
     align-self: center;
 }
@@ -30,6 +34,10 @@ body {
     margin: auto;
     width: 700px;
 }
+
+/*
+ * Styles for the heading
+ */
 
 h1 {
     font-family: 'Open Sans', sans-serif;
@@ -62,13 +70,13 @@ h1 {
     list-style: none;
 }
 
-.deck .card {
+.card {
     height: 125px;
     width: 125px;
     align-items: center;
 }
 
-.deck .card .card-display {
+.card-display {
     height: 125px;
     width: 125px;
     background: #2e3d49;
@@ -115,17 +123,17 @@ h1 {
     }
 }
 
-.deck .card .card-display.open {
+.card-display.open {
     background: #02b3e4;
     cursor: default;
     animation: open-animation 0.2s linear 0s 1 normal forwards;
 }
 
-.deck .card .card-display.open i {
+.card-display.open i {
     animation: open-symbol-animation 0.2s linear 0s 1 normal forwards;
 }
 
-.deck .card .card-display.show {
+.card-display.show {
     font-size: 33px;
 }
 
@@ -163,13 +171,13 @@ h1 {
     }
 }
 
-.deck .card .card-display.close {
+.card-display.close {
     background: #02b3e4;
     cursor: default;
     animation: close-animation 0.2s linear 0s 1 normal forwards;
 }
 
-.deck .card .card-display.close i {
+.card-display.close i {
     animation: close-symbol-animation 0.2s linear 0s 1 normal forwards;
 }
 
@@ -182,14 +190,14 @@ h1 {
     }
 }
 
-.deck .card .card-display.match {
+.card-display.match {
     cursor: default;
     background: #02ccba;
     font-size: 33px;
     animation: match-animation 0.2s alternate 0s 2 forwards;
 }
 
-.deck .card .card-display.hidden {
+.card-display.hidden {
     display: none;
 }
 
@@ -207,7 +215,6 @@ h1 {
 }
 
 .score-panel .stars {
-    margin: 0;
     padding: 0;
     display: inline-block;
     margin: 0 5px 0 0;
@@ -256,11 +263,11 @@ h1 {
     align-items: center;
     width: 90%;
     height: auto;
+    top: 80px;
+    left: 5%;
     margin: 0 auto;
     padding: 10px;
     position: absolute;
-    top: 80px;
-    left: 5%;
     animation: congrats-animation 1s;
 }
 
