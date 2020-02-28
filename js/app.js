@@ -1,4 +1,6 @@
 // The CSS class names used to display each card symbol type
+// Can easily be extended to larger grid size by simply adding more class names here
+// (in addition to changes to the stylesheet to make sure the extra cards fit the available space)
 const symbolClasses = ['diamond','paper-plane-o','anchor','bolt','cube','leaf','bicycle','bomb'];
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -44,6 +46,7 @@ class GameState {
         shuffle(this.cards);
     }
 
+    // Generalised function to determine if the player has won yet
     isWon() {
         return this.matchCount >= this.cards.length / 2;
     }
