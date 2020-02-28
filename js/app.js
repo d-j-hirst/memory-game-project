@@ -1,14 +1,5 @@
-/*
- * Create a list that holds all of your cards
- */
-
-
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
+// The CSS class names used to display each card symbol type
+const symbolClasses = ['diamond','paper-plane-o','anchor','bolt','cube','leaf','bicycle','bomb'];
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -25,29 +16,41 @@ function shuffle(array) {
     return array;
 }
 
-const symbolClasses = ['diamond','paper-plane-o','anchor','bolt','cube','leaf','bicycle','bomb'];
-const defaultSymbolOrder = [0,1,2,3,4,2,5,6,0,7,5,7,3,6,1,4];
-
-class GameState {
-    constructor(previousSession) {
-        this.currentSymbolOrder = defaultSymbolOrder;
-        this.moveCount = 0;
-        this.matchCount = 0;
-        this.session = previousSession + 1; // checking session number ensures that timer events
-                                            // from one session to avoid bleeding into the next one
-        this.timePassed = 0;
-        this.openedCards = [];
-        this.cardsEnabled = true; // clicking on cards is disabled while an animation is playing
-        shuffle(this.currentSymbolOrder);
-    }
-
-    isWon() {
-        return this.matchCount >= this.currentSymbolOrder.length / 2;
+class Card {
+    // symbol: this CSS class name to display the symbol for this card
+    //         (excluding the "fa-" prefix)
+    constructor(symbol) {
+        this.symbol = symbol;
+        this.matched = false;
     }
 }
 
-let game = new GameState(0);
+class GameState {
+    constructor(previousSession) {
+        // Create two of each type of card and put them in an array
+        const cardSymbols = symbolClasses.concat(symbolClasses);
+        this.cards = [];
+        for (const cardSymbol of cardSymbols) {
+            this.cards.push(new Card(cardSymbol));
+        }
 
+        this.moveCount = 0; // Number of opened pairs. Uncovering 2 cards counts as one move
+        this.matchCount = 0; // Number of matched pairs. Each pair adds 1 to this value
+        this.session = previousSession + 1; // checking session number ensures that timer events
+                                            // from one session to avoid bleeding into the next one
+        this.timePassed = 0;
+        this.openedCards = []; // cards currently uncovered (but not yet matched) by the user
+        this.cardsEnabled = true; // clicking on cards is disabled while an animation is playing
+        shuffle(this.cards);
+    }
+
+    isWon() {
+        return this.matchCount >= this.cards.length / 2;
+    }
+}
+
+// Completes operations that should take place after the animation for closing
+// an opened pair of cards is complete
 function completeClosedCards() {
     for (const cardIndex of game.openedCards) {
         const openCard = document.querySelector('#card-' + cardIndex);
@@ -59,26 +62,30 @@ function completeClosedCards() {
     game.cardsEnabled = true;
 }
 
+// Begins the animations for hiding an unmatched pair of cards once they have been shown to the player
 function hideOpenedCards() {
     for (const cardIndex of game.openedCards) {
         const openCard = document.querySelector('#card-' + cardIndex);
         openCard.classList.remove('open');
         openCard.classList.add('close');
     }
+    // hiding animation takes 200ms to complete, so set a timeout to complete the animation and re-enable card interactions then
     setTimeout(function () {completeClosedCards();}, 200);
 }
 
+// Check whether this game sets a new best score for fewest moves,
+// and update displays on the congrats panel to reflect this
 function recordFewestMoves() {
     const previousFewestMoves = window.localStorage.getItem('FewestMoves');
-    
+
     if (previousFewestMoves != null) {
         document.querySelector('.fewest-moves-previous-message').classList.remove('disabled');
         document.querySelector('.previous-fewest-moves').textContent = previousFewestMoves;
     }
     else {
+        // Don't display info about best scores if there are no previous games recorded
         document.querySelector('.fewest-moves-previous-message').classList.add('disabled');
     }
-
 
     if (previousFewestMoves == null || previousFewestMoves > game.moveCount) {
         document.querySelector('.fewest-moves-new-message').classList.remove('disabled');
@@ -89,14 +96,17 @@ function recordFewestMoves() {
     }
 }
 
+// Check whether this game sets a new best score for fastest time,
+// and update displays on the congrats panel to reflect this
 function recordFastestTime() {
     const previousFastestTime = window.localStorage.getItem('FastestTime');
-    
+
     if (previousFastestTime != null) {
         document.querySelector('.fastest-time-previous-message').classList.remove('disabled');
         document.querySelector('.previous-fastest-time').textContent = previousFastestTime;
     }
     else {
+        // Don't display info about best scores if there are no previous games recorded
         document.querySelector('.fastest-time-previous-message').classList.add('disabled');
     }
 
@@ -109,26 +119,33 @@ function recordFastestTime() {
     }
 }
 
+// Check whether this game sets any new best scores,
+// and update displays on the congrats panel to reflect this
 function recordBestScore() {
     recordFewestMoves();
     recordFastestTime();
 }
 
+// More readable function for displaying the congrats panel
 function showCongratsPanel() {
     document.querySelector('.congrats-panel').classList.add('enabled');
 }
 
+// More readable function for hiding the congrats panel
 function hideCongratsPanel() {
     document.querySelector('.congrats-panel').classList.remove('enabled');
 }
 
+// Handles the changes in game state and display when two cards are matched
 function handleMatch() {
     for (const cardIndex of game.openedCards) {
+        game.cards[cardIndex].matched = true;
         const openCard = document.querySelector('#card-' + cardIndex);
         openCard.classList.add('match');
         openCard.classList.remove('open');
     }
     game.openedCards = [];
+    game.cardsEnabled = true;
     game.matchCount++;
     refreshScorePanel();
     if (game.isWon()) {
@@ -137,23 +154,32 @@ function handleMatch() {
     }
 }
 
+// Handles the changes in display when two cards are shown but unmatched
 function handleNonMatch() {
-    game.cardsEnabled = false;
+    // pause for 1 second to display the symbol, so set a timeout to complete the animation and hide the cards then
     setTimeout(hideOpenedCards, 1000);
 }
 
+// Check whether there are two currently shown cards and, if so,
+// call the appropriate handler depending on whether they are matched or not
 function checkForMatch() {
     if (game.openedCards.length == 2) {
         game.moveCount++;
-        if (game.currentSymbolOrder[game.openedCards[0]] == game.currentSymbolOrder[game.openedCards[1]]) {
+        if (game.cards[game.openedCards[0]].symbol == game.cards[game.openedCards[1]].symbol) {
             handleMatch();
         }
         else {
             handleNonMatch();
         }
     }
+    else {
+        // Card interations were disabled during the opening animation
+        // here it is know only one card is displayed so we can enable clicking on other cards
+        game.cardsEnabled = true;
+    }
 }
 
+// Refresh the display on all time counters
 function refreshTimeCounters() {
     const timeCounters = document.querySelectorAll('.time');
     for (const timeCounter of timeCounters) {
@@ -161,6 +187,7 @@ function refreshTimeCounters() {
     }
 }
 
+// Refresh the display on all move counters
 function refreshMoveCounters() {
     const moveCounters = document.querySelectorAll('.moves');
     for (const moveCounter of moveCounters) {
@@ -168,6 +195,7 @@ function refreshMoveCounters() {
     }
 }
 
+// Refresh all displays of stars
 function refreshStars() {
     const starCount = (game.moveCount < 20 ? 3 : (game.moveCount < 30 ? 2 : 1));
     const starContainers = document.querySelectorAll('.stars');
@@ -189,24 +217,30 @@ function refreshStars() {
     }
 }
 
+// Refresh the score panel (this will also automatically refresh the corresponding parts of the congrats panel)
 function refreshScorePanel() {
     refreshMoveCounters();
     refreshTimeCounters();
     refreshStars();
 }
 
+// To be run when a card is clicked on, handles the logic of whether that card should be turned over
+// and begins the opening animation if that is so
 function cardListener(evt) {
     if (!game.cardsEnabled || game.isWon()) return;
     const card = evt.currentTarget;
-    if (card.classList.contains('show')) return;
+    const index = card.id.split('-')[1];
+    if (game.cards[index].matched) return;
+    if (game.openedCards.includes(index)) return;
     card.classList.add('show');
     card.classList.add('open');
-    const index = card.id.split('-')[1];
     game.openedCards.push(index);
+    game.cardsEnabled = false;
+    // pause for 200ms for the animation, so set a timeout to handle match logic then
     setTimeout(function() {checkForMatch();}, 200);
-    ;
 }
 
+// Look for all cards and add event listeners to them so that they function properly when clicked
 function resetCardListeners() {
     const cards = document.querySelectorAll('.card-display');
     for(const card of cards) {
@@ -214,6 +248,15 @@ function resetCardListeners() {
     }
 }
 
+// Look for all elements that restart the game and add listeners to them so that they function properly when clicked
+function resetRestartListeners() {
+    const restartButtons = document.querySelectorAll('.restart');
+    for(const restartButton of restartButtons) {
+        restartButton.addEventListener('click', restartGame);
+    }
+}
+
+// Increment the timer by one second if it is active, then set a timeout to repeat after one more second
 function incrementTimer(session) {
     if (session == game.session && !game.isWon()) {
         game.timePassed++;
@@ -223,13 +266,13 @@ function incrementTimer(session) {
     }
 }
 
-function restartGame() {
-    game = new GameState(game.session);
+// Creates the HTML elements for the cards of the game and place them in the appropriate parent element
+function createGameElements() {
     const deck = document.querySelector('.deck');
     while (deck.firstChild) {
         deck.firstChild.remove();
     }
-    for (let i=0; i<16; ++i) {
+    for (let i=0; i<game.cards.length; ++i) {
         const card = document.createElement('li');
         card.classList.add('card');
         const cardDisplay = document.createElement('div');
@@ -237,21 +280,28 @@ function restartGame() {
         cardDisplay.id = 'card-' + i;
         const symbol = document.createElement('i');
         symbol.classList.add('fa');
-        symbol.classList.add('fa-' + symbolClasses[game.currentSymbolOrder[i]]);
+        symbol.classList.add('fa-' + game.cards[i].symbol);
         cardDisplay.appendChild(symbol);
         card.appendChild(cardDisplay);
         deck.appendChild(card);
     }
-    hideCongratsPanel();
-    setTimeout(function() {incrementTimer(game.session)}, 1000);
-    refreshScorePanel();
-    resetCardListeners();
 }
 
+// Do everything to restart the game regardless of the current state
+function restartGame() {
+    // Just discard the old game state and create a new one from scratch
+    // to prevent anything from the old game leaking into the new one
+    // The constructor of GameState does all the logic needed for this
+    game = new GameState(game.session);
+
+    createGameElements();
+    hideCongratsPanel(); // If we restarted from the congrats panel then it need to be hidden
+    setTimeout(function() {incrementTimer(game.session)}, 1000); // Start the timer
+    refreshScorePanel();
+    resetCardListeners(); // createGameElements destroyed the old card listeners so we need to create them again
+}
+
+let game = new GameState(0);
 restartGame();
 game.session = 0; // just in case we actually use the absolute number some day
-
-const restartButtons = document.querySelectorAll('.restart');
-for(const restartButton of restartButtons) {
-    restartButton.addEventListener('click', restartGame);
-}
+resetRestartListeners();
